@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import type { Note } from "@/lib/types";
 
 const NOTE_COLORS = [
-  { value: null,      label: "Default" },
   { value: "#fef9c3", label: "Yellow" },
   { value: "#fce7f3", label: "Pink" },
   { value: "#dbeafe", label: "Blue" },
@@ -60,26 +59,38 @@ export function NoteContextMenu({ note, children }: NoteContextMenuProps) {
               {/* Color swatches */}
               <div className="px-2 py-1.5">
                 <p className="text-[10px] font-medium text-[var(--color-muted-foreground)] uppercase tracking-wider mb-1.5">Color</p>
-                <div className="flex gap-1.5">
+                <div className="flex gap-1.5 items-center">
+                  {/* Reset to default */}
+                  <button
+                    title="Default"
+                    className={cn(
+                      "w-5 h-5 rounded-full border-2 transition-transform hover:scale-110",
+                      !note.color
+                        ? "border-[var(--color-primary)]"
+                        : "border-[var(--color-border)] hover:border-black/20"
+                    )}
+                    style={{
+                      background: "linear-gradient(135deg, #fff 50%, #ddd 50%)",
+                      outline: "1px solid #ccc",
+                    }}
+                    onMouseDown={(e) => { e.preventDefault(); updateNote(note.id, { color: undefined }); }}
+                  />
                   {NOTE_COLORS.map(({ value, label }) => (
                     <button
-                      key={value ?? "default"}
+                      key={value}
                       title={label}
                       className={cn(
-                        "w-5 h-5 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center overflow-hidden",
-                        (value === null ? !note.color : note.color === value)
+                        "w-5 h-5 rounded-full border-2 transition-transform hover:scale-110",
+                        note.color === value
                           ? "border-[var(--color-primary)]"
-                          : "border-[var(--color-border)] hover:border-black/20"
+                          : "border-transparent hover:border-black/20"
                       )}
-                      style={{ backgroundColor: value ?? "var(--color-card)" }}
+                      style={{ backgroundColor: value }}
                       onMouseDown={(e) => {
                         e.preventDefault();
-                        updateNote(note.id, { color: value ?? undefined });
+                        updateNote(note.id, { color: value });
                       }}
                     >
-                      {value === null && (
-                        <div className="w-[1.5px] h-full bg-[var(--color-border)] rotate-45 absolute" />
-                      )}
                     </button>
                   ))}
                 </div>
