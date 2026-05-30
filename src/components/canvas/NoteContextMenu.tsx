@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import type { Note } from "@/lib/types";
 
 const NOTE_COLORS = [
+  { value: null,      label: "Default" },
   { value: "#fef9c3", label: "Yellow" },
   { value: "#fce7f3", label: "Pink" },
   { value: "#dbeafe", label: "Blue" },
@@ -62,20 +63,24 @@ export function NoteContextMenu({ note, children }: NoteContextMenuProps) {
                 <div className="flex gap-1.5">
                   {NOTE_COLORS.map(({ value, label }) => (
                     <button
-                      key={value}
+                      key={value ?? "default"}
                       title={label}
                       className={cn(
-                        "w-5 h-5 rounded-full border-2 transition-transform hover:scale-110",
-                        note.color === value
+                        "w-5 h-5 rounded-full border-2 transition-transform hover:scale-110 flex items-center justify-center overflow-hidden",
+                        (value === null ? !note.color : note.color === value)
                           ? "border-[var(--color-primary)]"
-                          : "border-transparent hover:border-black/20"
+                          : "border-[var(--color-border)] hover:border-black/20"
                       )}
-                      style={{ backgroundColor: value }}
+                      style={{ backgroundColor: value ?? "var(--color-card)" }}
                       onMouseDown={(e) => {
                         e.preventDefault();
-                        updateNote(note.id, { color: value });
+                        updateNote(note.id, { color: value ?? undefined });
                       }}
-                    />
+                    >
+                      {value === null && (
+                        <div className="w-[1.5px] h-full bg-[var(--color-border)] rotate-45 absolute" />
+                      )}
+                    </button>
                   ))}
                 </div>
               </div>
